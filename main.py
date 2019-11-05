@@ -5,10 +5,8 @@ import requests
 from flask import Flask
 from pytz import timezone
 
+
 app = Flask(__name__)
-TermData = namedtuple("Counter", "current_height, target_height, height_left,"
-                                 "current_datetime, est_datetime,"
-                                 "hours_left, minutes_left, seconds_left")
 
 endpoint = "https://ctz.solidwallet.io/api/v3"
 data = {
@@ -23,6 +21,11 @@ data = {
     },
     "id": 1
 }
+
+TermData = namedtuple("Counter", "current_height, target_height, height_left,"
+                                 "current_datetime, est_datetime,"
+                                 "hours_left, minutes_left, seconds_left")
+dt_fmt = "%Y-%m-%d %H:%M:%S"
 
 
 def get_data() -> dict:
@@ -43,15 +46,15 @@ def parse_data(response: dict) -> TermData:
 
     return TermData(
         current_height=current_height, target_height=target_height, height_left=height_left,
-        current_datetime=curr_time, est_datetime=est_time,
+        current_datetime=curr_time.strftime(dt_fmt), est_datetime=est_time.strftime(dt_fmt),
         hours_left=int(hours), minutes_left=int(minutes), seconds_left=int(seconds)
     )
 
 
 def make_result(parsed_data: TermData):
-    content0 = f">>> Current Height: {parsed_data.current_height}\n" \
-              f">>> Target Height: {parsed_data.target_height} \n" \
-              f">>> Heights left: {parsed_data.height_left} \n"
+    content0 = f"Current Height: {parsed_data.current_height}\n" \
+              f"Target Height: {parsed_data.target_height} \n" \
+              f"Heights left: {parsed_data.height_left} \n"
     content1 = f"... Current Time: {parsed_data.current_datetime} \n" \
                f"... Estimated Time: {parsed_data.est_datetime} \n"
     footer = f"... {parsed_data.hours_left} hours {parsed_data.minutes_left} minutes {parsed_data.seconds_left} seconds left."
@@ -61,8 +64,8 @@ def make_result(parsed_data: TermData):
             {
                 "type": "section",
                 "text": {
-                    "type": "mrkdwn",
-                    "text": "Doomsday Timer"
+                    "type": "plain_text",
+                    "text": ":hourglass_flowing_sand: *P-Rep Timer* :iconrocket:"
                 }
             },
             {
@@ -110,7 +113,7 @@ def make_result(parsed_data: TermData):
     return result_str
 
 
-@app.route('/', methods=["POST"])
+@app.route('/consensus-zzang', methods=["POST"])
 def doomsday_counter():
     raw_data = get_data()
     parsed_data = parse_data(raw_data)
