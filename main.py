@@ -1,9 +1,9 @@
-import requests
 import datetime
-from pytz import timezone
-from flask import Flask
 from collections import namedtuple
 
+import requests
+from flask import Flask
+from pytz import timezone
 
 app = Flask(__name__)
 TermData = namedtuple("Counter", "current_height, target_height, height_left,"
@@ -62,7 +62,7 @@ def make_result(parsed_data: TermData):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "P-Rep Timer"
+                    "text": "Doomsday Timer"
                 }
             },
             {
@@ -110,7 +110,7 @@ def make_result(parsed_data: TermData):
     return result_str
 
 
-@app.route('/consensus-zzang')
+@app.route('/', methods=["POST"])
 def doomsday_counter():
     raw_data = get_data()
     parsed_data = parse_data(raw_data)
