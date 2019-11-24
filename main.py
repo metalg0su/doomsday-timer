@@ -60,6 +60,7 @@ def make_result(parsed_data: TermData):
     footer = f"... {parsed_data.hours_left} hours {parsed_data.minutes_left} minutes {parsed_data.seconds_left} seconds left."
 
     result_str = {
+        "response_type": "in_channel",
         "blocks": [
             {
                 "type": "section",
